@@ -1,5 +1,9 @@
 package pl.wojtek.rop.railway;
 
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+
+import pl.wojtek.rop.railway.exceptions.RailwayFutureException;
 import pl.wojtek.rop.railway.exceptions.SuccessfulResultHasNoErrorException;
 import pl.wojtek.rop.railway.functions.Consumer;
 import pl.wojtek.rop.railway.functions.Function;
@@ -38,8 +42,19 @@ public class Success<TSuccess, TFailure> extends Result<TSuccess, TFailure> {
     }
 
     @Override
-    public <T, TFailure1> Result<T, TFailure1> bind(Function<TSuccess, Result<T, TFailure1>> function) {
+    public <T> Result<T, TFailure> bind(final Function<TSuccess, Result<T, TFailure>> function) {
         return function.apply(getValue());
+    }
+
+    @Override
+    public <T> Result<T, RailwayFutureException> bindFuture(Function<TSuccess, Future<T>> function) {
+        Result<T, RailwayFutureException> value = null;
+        try {
+            value = Success.withValue(function.apply(getValue()).get());
+        } catch (Exception e) {
+            value = Failure.withError(new RailwayFutureException(e));
+        }
+        return value;
     }
 
     @Override

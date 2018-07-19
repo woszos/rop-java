@@ -1,5 +1,8 @@
 package pl.wojtek.rop.railway;
 
+import java.util.concurrent.Future;
+
+import pl.wojtek.rop.railway.exceptions.RailwayFutureException;
 import pl.wojtek.rop.railway.functions.Consumer;
 import pl.wojtek.rop.railway.functions.Function;
 
@@ -49,7 +52,9 @@ public abstract class Result<TSuccess, TFailure> {
 
     public abstract <T> Result<TSuccess, T> mapFailure(final Function<TFailure, T> function);
 
-    public abstract <T, TFailure> Result<T, TFailure> bind(final Function<TSuccess, Result<T, TFailure>> function);
+    public abstract <T> Result<T, TFailure> bind(final Function<TSuccess, Result<T, TFailure>> function);
+
+    public abstract <T> Result<T, RailwayFutureException> bindFuture(final Function<TSuccess, Future<T>> function);
 
     public abstract Result<TSuccess, TFailure> tee(final Consumer<TSuccess> successFunction);
 

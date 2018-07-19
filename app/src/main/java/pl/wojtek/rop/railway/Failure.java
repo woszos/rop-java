@@ -1,6 +1,9 @@
 package pl.wojtek.rop.railway;
 
+import java.util.concurrent.Future;
+
 import pl.wojtek.rop.railway.exceptions.FailedResultHasNoValueException;
+import pl.wojtek.rop.railway.exceptions.RailwayFutureException;
 import pl.wojtek.rop.railway.functions.Consumer;
 import pl.wojtek.rop.railway.functions.Function;
 
@@ -39,9 +42,15 @@ public class Failure<TSuccess, TFailure> extends Result<TSuccess, TFailure> {
     }
 
     @Override
-    public <T, TFailure1> Result<T, TFailure1> bind(Function<TSuccess, Result<T, TFailure1>> function) {
-        return (Result<T, TFailure1>) this;
+    public <T> Result<T, TFailure> bind(final Function<TSuccess, Result<T, TFailure>> function) {
+        return (Result<T, TFailure>) this;
     }
+
+    @Override
+    public <T> Result<T, RailwayFutureException> bindFuture(Function<TSuccess, Future<T>> function) {
+        return Failure.withError(new RailwayFutureException(getError()));
+    }
+
 
     @Override
     public Result<TSuccess, TFailure> tee(Consumer<TSuccess> successFunction) {
