@@ -1,5 +1,7 @@
 package pl.wojtek.rop.railway;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Future;
 
 import pl.wojtek.rop.railway.exceptions.FailedResultHasNoValueException;
@@ -55,6 +57,18 @@ public class Failure<TSuccess, TFailure> extends Result<TSuccess, TFailure> {
     @Override
     public Result<TSuccess, TFailure> tee(Consumer<TSuccess> successFunction) {
         return this;
+    }
+
+    @Override
+    public Result<TSuccess, TFailure> aggregate(Function<TSuccess, Result<TSuccess, TFailure>>... results) {
+        return this;
+    }
+
+    @Override
+    public Result<TSuccess, List<TFailure>> merge(Function<TSuccess, Result<TSuccess, TFailure>>... results) {
+        List<TFailure> errors = new ArrayList<>();
+        errors.add(getError());
+        return Failure.withError(errors);
     }
 
     @Override

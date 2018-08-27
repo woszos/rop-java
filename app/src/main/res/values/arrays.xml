@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="special_letter">
+        <item>!</item>
+        <item>#</item>
+        <item>$</item>
+        <item>%</item>
+        <item>^</item>
+        <item>*</item>
+        <item>(</item>
+        <item>)</item>
+    </string-array>
+
+</resources>

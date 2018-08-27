@@ -10,7 +10,7 @@
         android:id="@+id/title"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Log in and read the prank about Chick Noris"
+        android:text="Log in and read the prank about Chuck Norris"
         android:gravity="center_horizontal"
         android:textSize="24dp"
         app:layout_constraintStart_toStartOf="parent"

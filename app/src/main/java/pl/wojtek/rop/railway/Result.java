@@ -1,5 +1,6 @@
 package pl.wojtek.rop.railway;
 
+import java.util.List;
 import java.util.concurrent.Future;
 
 import pl.wojtek.rop.railway.exceptions.RailwayFutureException;
@@ -34,7 +35,9 @@ public abstract class Result<TSuccess, TFailure> {
         if (value != null) {
             result = withValue(value);
         }
-        result = withError(error);
+        else {
+            result = withError(error);
+        }
         return result;
     }
 
@@ -57,6 +60,10 @@ public abstract class Result<TSuccess, TFailure> {
     public abstract <T> Result<T, RailwayFutureException> bindFuture(final Function<TSuccess, Future<T>> function);
 
     public abstract Result<TSuccess, TFailure> tee(final Consumer<TSuccess> successFunction);
+
+    public abstract Result<TSuccess, TFailure> aggregate(final Function<TSuccess, Result<TSuccess, TFailure>>... results);
+
+    public abstract Result<TSuccess, List<TFailure>> merge(final Function<TSuccess, Result<TSuccess, TFailure>>... results);
 
     public abstract Result<TSuccess, TFailure> onSuccess(final Consumer<TSuccess> function);
 

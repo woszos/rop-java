@@ -1,5 +1,7 @@
 package pl.wojtek.rop.railway;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
@@ -61,6 +63,34 @@ public class Success<TSuccess, TFailure> extends Result<TSuccess, TFailure> {
     public Result<TSuccess, TFailure> tee(Consumer<TSuccess> function) {
         function.accept(getValue());
         return this;
+    }
+
+    @Override
+    public Result<TSuccess, TFailure> aggregate(Function<TSuccess, Result<TSuccess, TFailure>>... results) {
+        Result<TSuccess, TFailure> lastResult = null;
+        for (Function<TSuccess, Result<TSuccess, TFailure>> result : results) {
+            lastResult = result.apply(getValue());
+            if (lastResult.isFailure()) {
+                return Failure.withError(lastResult.getError());
+            }
+        }
+        return Success.withValue(getValue());
+    }
+
+    @Override
+    public Result<TSuccess, List<TFailure>> merge(Function<TSuccess, Result<TSuccess, TFailure>>... results) {
+        List<TFailure> errors = new ArrayList<>();
+        Result<TSuccess, TFailure> lastResult = null;
+        for (Function<TSuccess, Result<TSuccess, TFailure>> result : results) {
+            lastResult = result.apply(getValue());
+            if (lastResult != null && lastResult.isFailure()) {
+                errors.add(lastResult.getError());
+            }
+        }
+        if (errors.isEmpty()) {
+            return Failure.withError(errors);
+        }
+        return Success.withValue(getValue());
     }
 
     @Override
